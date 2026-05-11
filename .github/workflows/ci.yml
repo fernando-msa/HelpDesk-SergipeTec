@@ -10,5 +10,6 @@ jobs:
         with:
           java-version: '25'
           distribution: 'temurin'
+          cache: 'maven'
       - name: Run Maven build and tests
         run: mvn clean test -B
