@@ -12,7 +12,7 @@ All notable changes to this project are documented in this file.
 ### Changed
 - Upgraded the runtime from Java 11 to Java 25.
 - Updated Maven compiler support and Jakarta EE dependencies.
-- Updated PostgreSQL JDBC to address known CVEs.
+- Updated PostgreSQL JDBC to the latest patched release to address known CVEs.
 - Updated the CI workflow to use Java 25.
 
 ### Fixed

@@ -31,6 +31,6 @@ The project currently uses:
 - Java 25 LTS
 - Maven 3.9.15
 - Jakarta EE 10.0.0
-- PostgreSQL JDBC 42.7.2
+- PostgreSQL JDBC 42.7.11
 
 If you upgrade dependencies, validate both functionality and known vulnerability status.

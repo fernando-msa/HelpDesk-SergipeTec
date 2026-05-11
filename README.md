@@ -49,7 +49,7 @@ HelpDesk-SergipeTec é uma aplicação web para gerenciamento centralizado de ti
 | **Maven** | 3.9.15 |
 | **Jakarta EE** | 10.0.0 |
 | **Hibernate ORM** | 6.2.7.Final |
-| **PostgreSQL JDBC** | 42.7.2 |
+| **PostgreSQL JDBC** | 42.7.11 |
 | **JUnit Jupiter** | 5.10.0 |
 | **JJWT** | 0.11.5 |
 
@@ -352,7 +352,7 @@ Este projeto foi recentemente atualizado de **Java 11** para **Java 25 LTS**. Ve
 ✅ Maven 3.x → **Maven 3.9.15**  
 ✅ maven-compiler-plugin → **3.11.0**  
 ✅ Jakarta EE 9.1 → **Jakarta EE 10.0**  
-✅ PostgreSQL JDBC 42.5.4 → **42.7.2** (CVE fixes)  
+✅ PostgreSQL JDBC 42.5.4 → **42.7.11** (CVE fixes)  
 
 ### Verificar Versão
 
@@ -379,10 +379,10 @@ mvn -version
 
 | CVE | Versão | Status | Ação |
 | --- | --- | --- | --- |
-| CVE-2024-1597 | PostgreSQL 42.5.4 | ✅ FIXADO | Upgrading para 42.7.2 |
-| CVE-2026-42198 | PostgreSQL 42.7.2 | ⚠️ RESIDUAL | Usar trusted connections |
+| CVE-2024-1597 | PostgreSQL 42.5.4 | ✅ FIXADO | Upgraded to 42.7.11 |
+| CVE-2026-42198 | PostgreSQL 42.7.2 | ✅ FIXADO | Upgraded to 42.7.11 |
 
-**Mitigação**: Conecte apenas a servidores PostgreSQL confiáveis com verificação TLS.
+**Mitigação**: Continue conectando apenas a servidores PostgreSQL confiáveis com verificação TLS.
 
 ---
 
