@@ -20,6 +20,7 @@ Um sistema de gerenciamento de tickets de suporte técnico desenvolvido em Java 
 - [Segurança](#segurança)
 - [Troubleshooting](#troubleshooting)
 - [Contribuindo](#contribuindo)
+- [Documentação do Projeto](#documentação-do-projeto)
 - [Licença](#licença)
 
 ---
@@ -416,6 +417,15 @@ mvn test -X  # Debug mode
 # Mudar porta no application.properties
 server.port=8081
 ```
+
+---
+
+## 📚 Documentação do Projeto
+
+- [CONTRIBUTING.md](CONTRIBUTING.md) - Guia para contribuir com o projeto
+- [SECURITY.md](SECURITY.md) - Política de segurança e reporte de vulnerabilidades
+- [CHANGELOG.md](CHANGELOG.md) - Histórico resumido das mudanças
+- [Upgrade Java 25](.github/java-upgrade/20260511115348/summary.md) - Detalhes do upgrade mais recente
 
 ---
 
