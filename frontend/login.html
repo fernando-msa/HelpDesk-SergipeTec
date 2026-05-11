@@ -6,15 +6,46 @@
   <title>HelpDesk — Login</title>
   <link rel="stylesheet" href="styles.css">
 </head>
-<body>
-  <main class="container">
-    <h1>Entrar</h1>
-    <form id="loginForm">
-      <label>Usuário<br><input name="username" value="admin"></label>
-      <label>Senha<br><input name="password" type="password" value="password"></label>
-      <button>Entrar</button>
-    </form>
-    <p id="msg"></p>
+<body class="login-page">
+  <main class="login-shell">
+    <section class="login-intro panel">
+      <div class="eyebrow">HelpDesk SergipeTec</div>
+      <h1>Acesse sua central de chamados</h1>
+      <p>Uma entrada objetiva, rápida e com foco no que importa: abrir, acompanhar e encerrar solicitações sem ruído.</p>
+      <ul class="login-points">
+        <li>Login simples para a demo local</li>
+        <li>Visão rápida de chamados e notificações</li>
+        <li>Fluxo pronto para teste em poucos segundos</li>
+      </ul>
+      <div class="login-hint">
+        <span class="login-hint-label">Dica da demo</span>
+        <strong>admin</strong> / <strong>password</strong>
+      </div>
+    </section>
+
+    <section class="login-card panel">
+      <div class="login-card-header">
+        <span class="login-badge">Acesso</span>
+        <h2>Entrar</h2>
+        <p>Use suas credenciais para continuar.</p>
+      </div>
+
+      <form id="loginForm" class="login-form">
+        <label>
+          <span>Usuário</span>
+          <input name="username" value="admin" autocomplete="username" placeholder="Digite seu usuário">
+        </label>
+
+        <label>
+          <span>Senha</span>
+          <input name="password" type="password" value="password" autocomplete="current-password" placeholder="Digite sua senha">
+        </label>
+
+        <button type="submit">Entrar</button>
+      </form>
+
+      <p id="msg" class="form-message" role="alert" aria-live="polite"></p>
+    </section>
   </main>
   <script src="app.js"></script>
 </body>
