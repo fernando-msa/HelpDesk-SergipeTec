@@ -9,9 +9,18 @@
 <body>
   <header>
     <h1>HelpDesk</h1>
-    <button id="logout">Sair</button>
+    <div class="header-actions">
+      <button id="notificationCountButton" class="ghost-button" type="button">
+        Notificações <span id="notificationCount" class="badge">0</span>
+      </button>
+      <button id="logout">Sair</button>
+    </div>
   </header>
   <main class="container">
+    <section class="panel">
+      <h2>Notificações recentes</h2>
+      <ul id="notifications"></ul>
+    </section>
     <section>
       <h2>Abrir Chamado</h2>
       <form id="ticketForm">

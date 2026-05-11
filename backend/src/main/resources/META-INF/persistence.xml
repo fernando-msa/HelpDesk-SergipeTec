@@ -2,6 +2,7 @@
 <persistence xmlns="https://jakarta.ee/xml/ns/persistence" version="3.0">
   <persistence-unit name="helpdeskPU" transaction-type="RESOURCE_LOCAL">
     <class>com.helpdesk.model.Ticket</class>
+    <class>com.helpdesk.model.Notification</class>
     <properties>
       <!-- Configure via environment or application server -->
       <property name="jakarta.persistence.jdbc.driver" value="${DB_DRIVER}"/>

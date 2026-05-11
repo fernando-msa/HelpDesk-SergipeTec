@@ -17,6 +17,19 @@ let tickets = [
   },
 ];
 
+let notifications = [
+  {
+    id: 1,
+    type: 'SYSTEM_READY',
+    message: 'Demo local pronta para testes.',
+    createdAt: Date.now(),
+    readAt: null,
+  },
+];
+
+let nextTicketId = 2;
+let nextNotificationId = 2;
+
 const mimeTypes = {
   '.html': 'text/html; charset=utf-8',
   '.js': 'application/javascript; charset=utf-8',
@@ -35,6 +48,21 @@ function send(res, statusCode, body, headers = {}) {
     ...headers,
   });
   res.end(body);
+}
+
+function authOk(req) {
+  const authorization = req.headers.authorization || '';
+  return authorization === `Bearer ${demoToken}`;
+}
+
+function addNotification(type, message) {
+  notifications.unshift({
+    id: nextNotificationId++,
+    type,
+    message,
+    createdAt: Date.now(),
+    readAt: null,
+  });
 }
 
 function readJsonBody(req, callback) {
@@ -83,9 +111,47 @@ const server = http.createServer((req, res) => {
     return;
   }
 
+  if (pathname === '/helpdesk-app/api/notifications' && req.method === 'GET') {
+    if (!authOk(req)) {
+      send(res, 401, JSON.stringify({ message: 'Nao autorizado' }), {
+        'Content-Type': 'application/json',
+      });
+      return;
+    }
+
+    send(res, 200, JSON.stringify(notifications), {
+      'Content-Type': 'application/json',
+    });
+    return;
+  }
+
+  const notificationReadMatch = pathname.match(/^\/helpdesk-app\/api\/notifications\/(\d+)\/read$/);
+  if (notificationReadMatch && req.method === 'POST') {
+    if (!authOk(req)) {
+      send(res, 401, JSON.stringify({ message: 'Nao autorizado' }), {
+        'Content-Type': 'application/json',
+      });
+      return;
+    }
+
+    const notificationId = Number(notificationReadMatch[1]);
+    const notification = notifications.find(item => item.id === notificationId);
+    if (!notification) {
+      send(res, 404, JSON.stringify({ message: 'Notificacao nao encontrada' }), {
+        'Content-Type': 'application/json',
+      });
+      return;
+    }
+
+    notification.readAt = Date.now();
+    send(res, 200, JSON.stringify(notification), {
+      'Content-Type': 'application/json',
+    });
+    return;
+  }
+
   if (pathname === '/helpdesk-app/api/tickets') {
-    const authorization = req.headers.authorization || '';
-    if (authorization !== `Bearer ${demoToken}`) {
+    if (!authOk(req)) {
       send(res, 401, JSON.stringify({ message: 'Nao autorizado' }), {
         'Content-Type': 'application/json',
       });
@@ -109,13 +175,14 @@ const server = http.createServer((req, res) => {
         }
 
         const createdTicket = {
-          id: tickets.length + 1,
+          id: nextTicketId++,
           title: ticket.title || 'Sem titulo',
           description: ticket.description || '',
           status: ticket.status || 'OPEN',
         };
 
         tickets.push(createdTicket);
+        addNotification('TICKET_CREATED', `Novo chamado #${createdTicket.id} aberto: ${createdTicket.title}`);
         send(res, 201, JSON.stringify(createdTicket), {
           'Content-Type': 'application/json',
         });
@@ -124,6 +191,67 @@ const server = http.createServer((req, res) => {
     }
 
     send(res, 405, JSON.stringify({ message: 'Metodo nao suportado' }), {
+      'Content-Type': 'application/json',
+    });
+    return;
+  }
+
+  const ticketStatusMatch = pathname.match(/^\/helpdesk-app\/api\/tickets\/(\d+)\/status$/);
+  if (ticketStatusMatch && req.method === 'PUT') {
+    if (!authOk(req)) {
+      send(res, 401, JSON.stringify({ message: 'Nao autorizado' }), {
+        'Content-Type': 'application/json',
+      });
+      return;
+    }
+
+    const ticketId = Number(ticketStatusMatch[1]);
+    readJsonBody(req, (error, update) => {
+      if (error || !update || !update.status) {
+        send(res, 400, JSON.stringify({ message: 'JSON invalido' }), {
+          'Content-Type': 'application/json',
+        });
+        return;
+      }
+
+      const ticket = tickets.find(item => item.id === ticketId);
+      if (!ticket) {
+        send(res, 404, JSON.stringify({ message: 'Chamado nao encontrado' }), {
+          'Content-Type': 'application/json',
+        });
+        return;
+      }
+
+      ticket.status = update.status;
+      addNotification('TICKET_UPDATED', `Chamado #${ticket.id} atualizado para ${update.status}`);
+      send(res, 200, JSON.stringify(ticket), {
+        'Content-Type': 'application/json',
+      });
+    });
+    return;
+  }
+
+  const ticketCloseMatch = pathname.match(/^\/helpdesk-app\/api\/tickets\/(\d+)\/close$/);
+  if (ticketCloseMatch && req.method === 'POST') {
+    if (!authOk(req)) {
+      send(res, 401, JSON.stringify({ message: 'Nao autorizado' }), {
+        'Content-Type': 'application/json',
+      });
+      return;
+    }
+
+    const ticketId = Number(ticketCloseMatch[1]);
+    const ticket = tickets.find(item => item.id === ticketId);
+    if (!ticket) {
+      send(res, 404, JSON.stringify({ message: 'Chamado nao encontrado' }), {
+        'Content-Type': 'application/json',
+      });
+      return;
+    }
+
+    ticket.status = 'CLOSED';
+    addNotification('TICKET_CLOSED', `Chamado #${ticket.id} foi encerrado`);
+    send(res, 200, JSON.stringify(ticket), {
       'Content-Type': 'application/json',
     });
     return;
