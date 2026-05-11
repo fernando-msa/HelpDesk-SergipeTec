@@ -1,0 +1,12 @@
+target/
+.env
+.env.local
+*.iml
+.idea/
+.classpath
+.project
+.settings/
+node_modules/
+dist/
+*.log
+/.vscode/

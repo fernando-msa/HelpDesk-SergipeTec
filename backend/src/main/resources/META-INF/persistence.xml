@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence xmlns="https://jakarta.ee/xml/ns/persistence" version="3.0">
+  <persistence-unit name="helpdeskPU" transaction-type="RESOURCE_LOCAL">
+    <class>com.helpdesk.model.Ticket</class>
+    <properties>
+      <!-- Configure via environment or application server -->
+      <property name="jakarta.persistence.jdbc.driver" value="${DB_DRIVER}"/>
+      <property name="jakarta.persistence.jdbc.url" value="${DB_URL}"/>
+      <property name="jakarta.persistence.jdbc.user" value="${DB_USER}"/>
+      <property name="jakarta.persistence.jdbc.password" value="${DB_PASSWORD}"/>
+      <property name="jakarta.persistence.schema-generation.database.action" value="create"/>
+    </properties>
+  </persistence-unit>
+</persistence>
