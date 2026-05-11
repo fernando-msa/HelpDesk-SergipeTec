@@ -19,6 +19,7 @@ Um sistema de gerenciamento de tickets de suporte técnico desenvolvido em Java 
 - [Instalação](#instalação)
 - [Configuração](#configuração)
 - [Como Usar](#como-usar)
+- [Demo Local](#demo-local)
 - [Estrutura do Projeto](#estrutura-do-projeto)
 - [Testes](#testes)
 - [API Endpoints](#api-endpoints)
@@ -116,6 +117,32 @@ mvn clean test
 # Com output detalhado
 mvn clean test -X
 ```
+
+### 4. Subir a Demo Local
+
+Se quiser testar o produto rapidamente no navegador, rode o backend de demo incluso no repositório:
+
+```bash
+node demo-server.js
+```
+
+Ou, no PowerShell:
+
+```powershell
+.\run-demo.ps1
+```
+
+Depois abra:
+
+- http://localhost:3000/login.html
+- http://localhost:3000/index.html
+
+Credenciais da demo:
+
+- Usuário: `admin`
+- Senha: `password`
+
+O servidor demo expõe login e tickets em memória, então é ideal para teste local e demonstração rápida.
 
 ---
 
