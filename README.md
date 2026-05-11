@@ -1,5 +1,10 @@
 # 🎫 HelpDesk-SergipeTec
 
+![Java 25](https://img.shields.io/badge/Java-25_LTS-007396?logo=openjdk&logoColor=white)
+![Maven 3.9.15](https://img.shields.io/badge/Maven-3.9.15-C71A36?logo=apachemaven&logoColor=white)
+![Tests Passing](https://img.shields.io/badge/Tests-100%25_Passing-2E8B57?logo=checkmarx&logoColor=white)
+![License MIT](https://img.shields.io/badge/License-MIT-4C1?logo=opensourceinitiative&logoColor=white)
+
 Um sistema de gerenciamento de tickets de suporte técnico desenvolvido em Java com autenticação JWT, persistência JPA e interface web responsiva.
 
 **Status**: ✅ Java 25 LTS | Maven 3.9.15 | 100% Testes Passando
