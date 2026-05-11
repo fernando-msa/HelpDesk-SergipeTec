@@ -9,6 +9,6 @@ jobs:
         uses: actions/setup-java@v4
         with:
           java-version: '25'
-          distribution: 'eclipse-temurin'
+          distribution: 'temurin'
       - name: Run Maven build and tests
         run: mvn clean test -B
