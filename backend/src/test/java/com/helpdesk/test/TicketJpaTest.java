@@ -1,6 +1,7 @@
 package com.helpdesk.test;
 
 import com.helpdesk.model.Ticket;
+import com.helpdesk.model.TicketStatus;
 import org.junit.jupiter.api.*;
 
 import jakarta.persistence.EntityManager;
@@ -33,7 +34,7 @@ public class TicketJpaTest {
         Ticket t = new Ticket();
         t.setTitle("Teste");
         t.setDescription("Descrição teste");
-        t.setStatus("OPEN");
+        t.setStatus(TicketStatus.OPEN);
         t.setCreatedAt(System.currentTimeMillis());
 
         em.getTransaction().begin();
