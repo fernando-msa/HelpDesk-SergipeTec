@@ -14,7 +14,8 @@ public class Ticket {
     @Column(length = 4000)
     private String description;
 
-    private String status;
+    @Enumerated(EnumType.STRING)
+    private TicketStatus status;
 
     private Long createdAt;
 
@@ -26,8 +27,8 @@ public class Ticket {
     public void setTitle(String title) { this.title = title; }
     public String getDescription() { return description; }
     public void setDescription(String description) { this.description = description; }
-    public String getStatus() { return status; }
-    public void setStatus(String status) { this.status = status; }
+    public TicketStatus getStatus() { return status; }
+    public void setStatus(TicketStatus status) { this.status = status; }
     public Long getCreatedAt() { return createdAt; }
     public void setCreatedAt(Long createdAt) { this.createdAt = createdAt; }
 }
