@@ -9,12 +9,15 @@ import jakarta.persistence.PersistenceContext;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.*;
 import java.util.List;
+import java.util.logging.Logger;
 
 @Stateless
 @Path("/api/tickets")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class TicketResource {
+
+    private static final Logger LOG = Logger.getLogger(TicketResource.class.getName());
 
     @PersistenceContext(unitName = "helpdeskPU")
     private EntityManager em;
@@ -46,6 +49,7 @@ public class TicketResource {
         ticket.setCreatedAt(System.currentTimeMillis());
         em.persist(ticket);
         em.flush();
+        LOG.info("Ticket created: #" + ticket.getId() + " - " + ticket.getTitle());
         createNotification("TICKET_CREATED", "Novo chamado #" + ticket.getId() + " aberto: " + ticket.getTitle());
         return Response.created(
             uriInfo.getAbsolutePathBuilder().path(String.valueOf(ticket.getId())).build()
@@ -77,6 +81,7 @@ public class TicketResource {
 
         t.setStatus(novoStatus);
         em.merge(t);
+        LOG.info("Ticket #" + t.getId() + " status updated to " + novoStatus);
         createNotification("TICKET_UPDATED", "Chamado #" + t.getId() + " atualizado para " + novoStatus);
         return Response.ok(t).build();
     }
@@ -88,6 +93,7 @@ public class TicketResource {
         if (t == null) return Response.status(Response.Status.NOT_FOUND).build();
         t.setStatus(TicketStatus.CLOSED);
         em.merge(t);
+        LOG.info("Ticket #" + t.getId() + " closed");
         createNotification("TICKET_CLOSED", "Chamado #" + t.getId() + " foi encerrado.");
         return Response.ok(t).build();
     }

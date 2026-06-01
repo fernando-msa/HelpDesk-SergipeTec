@@ -9,14 +9,17 @@ public class Ticket {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false, length = 255)
     private String title;
 
     @Column(length = 4000)
     private String description;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 20)
     private TicketStatus status;
 
+    @Column(nullable = false)
     private Long createdAt;
 
     public Ticket() {}

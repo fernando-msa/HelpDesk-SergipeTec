@@ -9,7 +9,7 @@
       <property name="jakarta.persistence.jdbc.url" value="${DB_URL}"/>
       <property name="jakarta.persistence.jdbc.user" value="${DB_USER}"/>
       <property name="jakarta.persistence.jdbc.password" value="${DB_PASSWORD}"/>
-      <property name="jakarta.persistence.schema-generation.database.action" value="create"/>
+      <property name="jakarta.persistence.schema-generation.database.action" value="none"/>
     </properties>
   </persistence-unit>
 </persistence>

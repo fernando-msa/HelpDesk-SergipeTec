@@ -1,513 +1,184 @@
-# 🎫 HelpDesk-SergipeTec
+# HelpDesk-SergipeTec
+
+> Technical support ticket management system built with Jakarta EE 10, JWT authentication, and JPA/Hibernate persistence.
 
 ![Java 25](https://img.shields.io/badge/Java-25_LTS-007396?logo=openjdk&logoColor=white)
 ![Maven 3.9.15](https://img.shields.io/badge/Maven-3.9.15-C71A36?logo=apachemaven&logoColor=white)
-![Tests Passing](https://img.shields.io/badge/Tests-100%25_Passing-2E8B57?logo=checkmarx&logoColor=white)
+![Jakarta EE 10](https://img.shields.io/badge/Jakarta_EE-10.0.0-1E90FF?logo=jakartaee&logoColor=white)
 ![CI](https://github.com/fernando-msa/HelpDesk-SergipeTec/actions/workflows/ci.yml/badge.svg?branch=main)
 ![License MIT](https://img.shields.io/badge/License-MIT-4C1?logo=opensourceinitiative&logoColor=white)
 
-Um sistema de gerenciamento de tickets de suporte técnico desenvolvido em Java com autenticação JWT, persistência JPA e interface web responsiva.
-
-**Status**: ✅ Java 25 LTS | Maven 3.9.15 | 100% Testes Passando
-
 ---
 
-## 📋 Índice
+## Features
 
-- [Visão Geral](#visão-geral)
-- [Pré-requisitos](#pré-requisitos)
-- [Instalação](#instalação)
-- [Configuração](#configuração)
-- [Como Usar](#como-usar)
-- [Demo Local](#demo-local)
-- [Estrutura do Projeto](#estrutura-do-projeto)
-- [Testes](#testes)
-- [API Endpoints](#api-endpoints)
-- [Upgrade Java 25](#upgrade-java-25)
-- [Segurança](#segurança)
-- [Troubleshooting](#troubleshooting)
-- [Contribuindo](#contribuindo)
-- [Documentação do Projeto](#documentação-do-projeto)
-- [Licença](#licença)
+- **JWT Authentication** -- HMAC-SHA256 signed tokens with configurable expiration
+- **Ticket Lifecycle** -- Create, update status (Open / In Progress / Closed), and close tickets
+- **Notification System** -- Automatic notifications for ticket events
+- **RESTful API** -- JSON-based endpoints with input validation
+- **Responsive UI** -- HTML5/CSS3/JavaScript frontend
+- **PBKDF2 Password Hashing** -- Secure credential storage with constant-time comparison
 
----
+## Tech Stack
 
-## 🎯 Visão Geral
+| Component        | Version / Details                          |
+|------------------|--------------------------------------------|
+| **Java**         | 25 LTS (Eclipse Adoptium)                  |
+| **Maven**        | 3.9.15                                     |
+| **Jakarta EE**   | 10.0.0 (JAX-RS, JPA, EJB, CDI)            |
+| **Hibernate ORM**| 6.2.7.Final                                |
+| **PostgreSQL**   | JDBC 42.7.11                               |
+| **JWT**          | JJWT 0.11.5 (HMAC-SHA256)                  |
+| **JUnit**        | 5.10.0 (Jupiter)                           |
+| **H2 Database**  | 2.2.220 (test scope)                       |
 
-HelpDesk-SergipeTec é uma aplicação web para gerenciamento centralizado de tickets de suporte técnico com:
+## Architecture
 
-✅ **Autenticação JWT** - Tokens seguros para acesso à API  
-✅ **Persistência com JPA/Hibernate** - Integração com PostgreSQL  
-✅ **Interface Web Responsiva** - HTML5 + CSS3 + JavaScript  
-✅ **REST API** - Endpoints para gerenciar tickets  
-✅ **Testes Automatizados** - JUnit 5 com cobertura de funcionalidades críticas  
+```
+┌──────────────┐     ┌──────────────────┐     ┌──────────────────┐     ┌────────────┐
+│   Frontend   │────>│   JAX-RS API     │────>│   JPA/Hibernate  │────>│ PostgreSQL │
+│  HTML/CSS/JS │<────│   (Resources)    │<────│   (Entities)     │<────│            │
+└──────────────┘     └──────────────────┘     └──────────────────┘     └────────────┘
+                            │
+                     ┌──────┴──────┐
+                     │  JwtFilter  │
+                     │  (Auth)     │
+                     └─────────────┘
+```
 
-### Tecnologias
+**Request flow:** Client sends HTTP request -> `JwtFilter` validates the Bearer token -> JAX-RS Resource handles business logic -> JPA EntityManager persists/queries entities -> JSON response returned to client.
 
-| Componente | Versão |
-| --- | --- |
-| **Java** | 25 LTS (Eclipse Adoptium) |
-| **Maven** | 3.9.15 |
-| **Jakarta EE** | 10.0.0 |
-| **Hibernate ORM** | 6.2.7.Final |
-| **PostgreSQL JDBC** | 42.7.11 |
-| **JUnit Jupiter** | 5.10.0 |
-| **JJWT** | 0.11.5 |
+## Getting Started
 
----
+### Prerequisites
 
-## 📦 Pré-requisitos
+- JDK 25+ (Eclipse Adoptium recommended)
+- Maven 3.9+
+- PostgreSQL 15+ (or use the demo server for local testing without a database)
 
-Antes de começar, certifique-se de ter instalado:
-
-### Obrigatório
-- **JDK 25** ou superior
-  ```bash
-  java -version
-  # Expected: Java 25.x.x
-  ```
-
-- **Maven 3.9+**
-  ```bash
-  mvn -version
-  # Expected: Maven 3.9.x
-  ```
-
-- **PostgreSQL 12+** (para produção)
-  ```bash
-  psql --version
-  ```
-
-- **Git**
-  ```bash
-  git --version
-  ```
-
-### Opcional (Desenvolvimento)
-- IDE: IntelliJ IDEA, VS Code, ou Eclipse
-- Docker (para containerização)
-
----
-
-## 🚀 Instalação
-
-### 1. Clonar o Repositório
+### Installation
 
 ```bash
 git clone https://github.com/fernando-msa/HelpDesk-SergipeTec.git
 cd HelpDesk-SergipeTec
 ```
 
-### 2. Compilar o Projeto
+### Environment Configuration
 
-```bash
-# Compilação completa com testes
-mvn clean install
+Create a `.env` file (see `.env.example`):
 
-# Compilação sem testes (mais rápido)
-mvn clean install -DskipTests
+```env
+DB_DRIVER=org.postgresql.Driver
+DB_URL=jdbc:postgresql://localhost:5432/helpdeskdb
+DB_USER=helpdesk_user
+DB_PASSWORD=your_password_here
+JWT_SECRET=$(openssl rand -base64 48)
 ```
 
-### 3. Executar Testes Locais
+### Build and Run
 
 ```bash
-# Todos os testes
-mvn clean test
+# Build
+mvn clean package
 
-# Com output detalhado
-mvn clean test -X
+# Deploy WAR to Jakarta EE server (Payara, WildFly, etc.)
+cp target/helpdesk-app-0.1.0.war $PAYARA_HOME/domains/domain1/autodeploy/
 ```
 
-### 4. Subir a Demo Local
-
-Se quiser testar o produto rapidamente no navegador, rode o backend de demo incluso no repositório:
+### Quick Demo (No Database Required)
 
 ```bash
 node demo-server.js
+# Open http://localhost:3000
 ```
 
-Ou, no PowerShell:
+## API Reference
 
-```powershell
-.\run-demo.ps1
-```
+All endpoints (except login) require `Authorization: Bearer <token>` header.
 
-Depois abra:
+### Authentication
 
-- http://localhost:3000/login.html
-- http://localhost:3000/index.html
-
-Credenciais da demo:
-
-- Usuário: `admin`
-- Senha: `password`
-
-O servidor demo expõe login e tickets em memória, então é ideal para teste local e demonstração rápida.
-
----
-
-## ⚙️ Configuração
-
-### Variáveis de Ambiente
-
-Crie um arquivo `.env` na raiz do projeto com as seguintes variáveis:
-
-```env
-# Segurança JWT
-JWT_SECRET=sua-chave-secreta-super-segura-aqui-minimo-32-caracteres
-
-# Banco de Dados (Produção)
-DATABASE_URL=jdbc:postgresql://localhost:5432/helpdesk
-DATABASE_USER=postgres
-DATABASE_PASSWORD=sua_senha
-
-# Servidor
-SERVER_PORT=8080
-SERVER_HOST=localhost
-
-# Hibernate
-HIBERNATE_DIALECT=org.hibernate.dialect.PostgreSQL10Dialect
-HIBERNATE_HBM2DDL_AUTO=validate
-```
-
-### Arquivo de Persistência (JPA)
-
-O arquivo `backend/src/main/resources/META-INF/persistence.xml` contém a configuração de conexão:
-
-```xml
-<persistence-unit name="helpdeskPU" transaction-type="RESOURCE_LOCAL">
-    <class>com.helpdesk.model.Ticket</class>
-    <properties>
-        <property name="jakarta.persistence.jdbc.driver" value="org.h2.Driver"/>
-        <property name="jakarta.persistence.jdbc.url" value="jdbc:h2:mem:helpdesk"/>
-        <property name="jakarta.persistence.schema-generation.database.action" value="drop-and-create"/>
-    </properties>
-</persistence-unit>
-```
-
----
-
-## 💻 Como Usar
-
-### Build e Deploy
-
-```bash
-# Gerar WAR para deploy em servidor aplicações
-mvn clean package
-
-# Arquivo gerado: target/helpdesk-app-0.1.0.war
-```
-
-### Executar Testes
-
-```bash
-# Testes de JWT
-mvn test -Dtest=JwtUtilTest
-
-# Testes de JPA
-mvn test -Dtest=TicketJpaTest
-
-# Todos os testes com relatório
-mvn clean test site
-```
-
-### Usar Docker (Opcional)
-
-```bash
-# Build da imagem
-docker build -t helpdesk-sergipetec .
-
-# Executar container
-docker run -p 8080:8080 helpdesk-sergipetec
-```
-
----
-
-## 📁 Estrutura do Projeto
-
-```
-HelpDesk-SergipeTec/
-├── backend/
-│   └── src/
-│       ├── main/
-│       │   ├── java/com/helpdesk/
-│       │   │   ├── api/
-│       │   │   │   ├── AuthResource.java       # Autenticação & JWT
-│       │   │   │   └── TicketResource.java     # CRUD de Tickets
-│       │   │   ├── model/
-│       │   │   │   └── Ticket.java             # Entidade JPA
-│       │   │   └── security/
-│       │   │       └── JwtUtil.java            # Utilitários JWT
-│       │   └── resources/
-│       │       └── META-INF/persistence.xml    # Config JPA
-│       └── test/
-│           ├── java/com/helpdesk/test/
-│           │   ├── JwtUtilTest.java            # Testes JWT
-│           │   └── TicketJpaTest.java          # Testes JPA
-│           └── resources/
-│               └── META-INF/persistence.xml    # Config Teste
-├── frontend/
-│   ├── index.html                              # Dashboard
-│   ├── login.html                              # Login
-│   ├── app.js                                  # Lógica frontend
-│   └── styles.css                              # Estilos
-├── .github/
-│   ├── workflows/
-│   │   └── ci.yml                              # GitHub Actions CI/CD
-│   └── java-upgrade/
-│       └── 20260511115348/                     # Upgrade docs
-├── pom.xml                                     # Configuração Maven
-├── README.md                                   # Este arquivo
-└── run-tests-docker.ps1                        # Script testes Docker
-```
-
----
-
-## ✅ Testes
-
-### Suites de Testes
-
-#### 1. **JwtUtilTest** - Validação de Tokens JWT
-
-```java
-// Testa geração e parsing de tokens JWT
-- Geração de token com claims corretos
-- Validação de expiração
-- Parsing e extração de dados
-```
-
-**Executar:**
-```bash
-mvn test -Dtest=JwtUtilTest
-```
-
-#### 2. **TicketJpaTest** - Persistência em Banco de Dados
-
-```java
-// Testa operações JPA com Hibernate + H2
-- Criação de ticket
-- Persistência em banco
-- Recuperação de dados
-- Transações
-```
-
-**Executar:**
-```bash
-mvn test -Dtest=TicketJpaTest
-```
-
-### Relatório de Testes
-
-```bash
-# Gerar relatório Surefire
-mvn surefire-report:report
-
-# Abrir relatório
-target/site/surefire-report.html
-```
-
----
-
-## 🔌 API Endpoints
-
-### Autenticação
-
-```http
-POST /api/auth/login
-Content-Type: application/json
-
-{
-  "username": "usuario",
-  "password": "senha"
-}
-
-Response: { "token": "eyJhbGciOiJIUzI1NiJ9..." }
-```
+| Method | Endpoint           | Body                                      | Response         |
+|--------|--------------------|-------------------------------------------|------------------|
+| POST   | `/api/auth/login`  | `{"username": "admin", "password": "..."}` | `{"token": "..."}` |
 
 ### Tickets
 
-#### Listar Tickets
+| Method | Endpoint                    | Body                                          | Description              |
+|--------|-----------------------------|-----------------------------------------------|--------------------------|
+| GET    | `/api/tickets`              | --                                            | List all tickets         |
+| GET    | `/api/tickets/{id}`         | --                                            | Get ticket by ID         |
+| POST   | `/api/tickets`              | `{"title": "...", "description": "..."}`       | Create new ticket        |
+| PUT    | `/api/tickets/{id}/status`  | `{"status": "IN_PROGRESS"}`                   | Update ticket status     |
+| POST   | `/api/tickets/{id}/close`   | --                                            | Close ticket             |
 
-```http
-GET /api/tickets
-Authorization: Bearer {token}
-```
+### Notifications
 
-#### Criar Ticket
+| Method | Endpoint                       | Description            |
+|--------|--------------------------------|------------------------|
+| GET    | `/api/notifications`           | List all notifications |
+| POST   | `/api/notifications/{id}/read` | Mark as read           |
 
-```http
-POST /api/tickets
-Authorization: Bearer {token}
-Content-Type: application/json
+### Status Values
 
-{
-  "title": "Bug na autenticação",
-  "description": "Não consigo fazer login",
-  "status": "OPEN"
-}
-```
+`OPEN` | `IN_PROGRESS` | `CLOSED`
 
-#### Atualizar Ticket
-
-```http
-PUT /api/tickets/{id}
-Authorization: Bearer {token}
-Content-Type: application/json
-
-{
-  "title": "Bug na autenticação - RESOLVIDO",
-  "status": "CLOSED"
-}
-```
-
-#### Deletar Ticket
-
-```http
-DELETE /api/tickets/{id}
-Authorization: Bearer {token}
-```
-
----
-
-## 🚀 Upgrade Java 25
-
-Este projeto foi recentemente atualizado de **Java 11** para **Java 25 LTS**. Veja [UPGRADE.md](.github/java-upgrade/20260511115348/summary.md) para detalhes completos.
-
-### Mudanças Principais
-
-✅ Java 11 → **Java 25 LTS** (Suporte até 2033)  
-✅ Maven 3.x → **Maven 3.9.15**  
-✅ maven-compiler-plugin → **3.11.0**  
-✅ Jakarta EE 9.1 → **Jakarta EE 10.0**  
-✅ PostgreSQL JDBC 42.5.4 → **42.7.11** (CVE fixes)  
-
-### Verificar Versão
+## Testing
 
 ```bash
-java -version
-# Expected: Java 25.0.3
-
-mvn -version
-# Expected: Maven 3.9.15
+# Run all tests (uses H2 in-memory database, no PostgreSQL needed)
+mvn clean test
 ```
 
----
+Tests use an H2 in-memory database via a dedicated `persistence.xml` in `src/test/resources`. No external database setup is required.
 
-## 🔒 Segurança
+**Test coverage:**
 
-### Boas Práticas Implementadas
+| Test Class             | Scope                                       |
+|------------------------|---------------------------------------------|
+| `JwtUtilTest`          | Token generation, parsing, expiration, tampering |
+| `TicketJpaTest`        | Entity CRUD, status transitions, timestamps |
+| `NotificationJpaTest`  | Entity CRUD, mark-as-read, type variants    |
 
-✅ **JWT com HMAC-SHA256** - Tokens assinados e verificáveis  
-✅ **Variáveis de Ambiente** - Secrets não commitados  
-✅ **HTTPS Ready** - Compatível com TLS/SSL  
-✅ **CORS Configurável** - Proteção contra requisições não autorizadas  
+## Project Structure
 
-### CVEs Conhecidas
+```
+backend/src/main/java/com/helpdesk/
+├── api/
+│   ├── AuthResource.java           # POST /api/auth/login
+│   ├── TicketResource.java         # Ticket CRUD endpoints
+│   ├── NotificationResource.java   # Notification endpoints
+│   └── GlobalExceptionMapper.java  # Centralized error handling
+├── model/
+│   ├── Ticket.java                 # JPA entity (tickets table)
+│   ├── Notification.java           # JPA entity (notifications table)
+│   └── TicketStatus.java           # Enum: OPEN, IN_PROGRESS, CLOSED
+└── security/
+    ├── JwtUtil.java                # JWT generation and parsing
+    ├── JwtFilter.java              # Request filter for authentication
+    └── CorsFilter.java             # CORS configuration
 
-| CVE | Versão | Status | Ação |
-| --- | --- | --- | --- |
-| CVE-2024-1597 | PostgreSQL 42.5.4 | ✅ FIXADO | Upgraded to 42.7.11 |
-| CVE-2026-42198 | PostgreSQL 42.7.2 | ✅ FIXADO | Upgraded to 42.7.11 |
-
-**Mitigação**: Continue conectando apenas a servidores PostgreSQL confiáveis com verificação TLS.
-
----
-
-## 🐛 Troubleshooting
-
-### Problema: "Java version not found"
-
-```bash
-# Solução 1: Definir JAVA_HOME
-export JAVA_HOME=/path/to/jdk-25
-echo $JAVA_HOME
-
-# Solução 2: Verificar PATH
-java -version
+frontend/
+├── index.html                      # Dashboard
+├── login.html                      # Login page
+├── app.js                          # Frontend logic
+└── styles.css                      # Responsive styles
 ```
 
-### Problema: "Maven compilation failed"
+## Security
 
-```bash
-# Limpar cache Maven
-mvn clean install -U
+- **JWT HMAC-SHA256** -- Tokens signed with a secret key; the application fails to start if `JWT_SECRET` is not configured
+- **PBKDF2 Password Hashing** -- Passwords hashed with PBKDF2WithHmacSHA256 (65536 iterations, 256-bit key) with constant-time comparison
+- **CORS** -- Configurable origin via `CORS_ORIGIN` environment variable
+- **Input Validation** -- `@Column` constraints on entities, API-level validation on required fields
+- **Global Exception Handling** -- `ExceptionMapper` prevents stack trace leakage in production
+- **Environment-Based Configuration** -- All secrets managed via environment variables, no hardcoded credentials in source
 
-# Verificar pom.xml
-mvn validate
-```
+## License
 
-### Problema: "Tests failing - Database connection"
+MIT License -- see [LICENSE](LICENSE) for details.
 
-```bash
-# Verificar H2 (usado em testes)
-# O projeto usa H2 in-memory por padrão
-mvn test -X  # Debug mode
-```
+## Author
 
-### Problema: "Port 8080 already in use"
-
-```bash
-# Mudar porta no application.properties
-server.port=8081
-```
-
----
-
-## 📚 Documentação do Projeto
-
-- [CONTRIBUTING.md](CONTRIBUTING.md) - Guia para contribuir com o projeto
-- [SECURITY.md](SECURITY.md) - Política de segurança e reporte de vulnerabilidades
-- [CHANGELOG.md](CHANGELOG.md) - Histórico resumido das mudanças
-- [Upgrade Java 25](.github/java-upgrade/20260511115348/summary.md) - Detalhes do upgrade mais recente
-
----
-
-## 📝 Contribuindo
-
-1. **Fork** o repositório
-2. **Crie** uma branch para sua feature (`git checkout -b feature/AmazingFeature`)
-3. **Commit** suas mudanças (`git commit -m 'Add AmazingFeature'`)
-4. **Push** para a branch (`git push origin feature/AmazingFeature`)
-5. **Abra** um Pull Request
-
-### Padrões de Código
-
-- **Java**: seguir convenções Oracle Java
-- **Nomes**: camelCase para variáveis, PascalCase para classes
-- **Comments**: Documentar métodos públicos com Javadoc
-- **Testes**: Mínimo 1 teste por classe
-
----
-
-## 📄 Licença
-
-Este projeto está sob a licença **MIT**. Veja [LICENSE](LICENSE) para detalhes.
-
----
-
-## 👥 Autores
-
-- **Fernando Admin** - Upgrade Java 25 LTS
-- **SergipeTec Team** - Desenvolvimento inicial
-
----
-
-## 📞 Suporte
-
-- 📧 Email: support@helpdesk-sergipetec.local
-- 🐛 Issues: [GitHub Issues](https://github.com/fernando-msa/HelpDesk-SergipeTec/issues)
-- 📚 Documentação: [Wiki](https://github.com/fernando-msa/HelpDesk-SergipeTec/wiki)
-
----
-
-## 🎓 Recursos Adicionais
-
-- [Java 25 Documentation](https://docs.oracle.com/en/java/javase/25/)
-- [Maven Official Guide](https://maven.apache.org/guides/)
-- [Jakarta EE Specification](https://jakarta.ee/)
-- [Hibernate ORM Reference](https://hibernate.org/orm/)
-- [JWT.io](https://jwt.io/) - JWT Explanation
-
----
-
-**Last Updated**: 11 de maio de 2026 | **Version**: 0.1.0 | **Java**: 25 LTS
+**Fernando S. De Santana Junior**
+[GitHub](https://github.com/fernando-msa) | [LinkedIn](https://www.linkedin.com/in/fernando-msa/)

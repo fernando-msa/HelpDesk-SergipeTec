@@ -9,9 +9,13 @@ import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.ext.Provider;
 
+import java.util.logging.Logger;
+
 @Provider
 @Priority(Priorities.AUTHENTICATION)
 public class JwtFilter implements ContainerRequestFilter {
+
+    private static final Logger LOG = Logger.getLogger(JwtFilter.class.getName());
 
     private static final String BEARER_PREFIX = "Bearer ";
 
@@ -35,6 +39,7 @@ public class JwtFilter implements ContainerRequestFilter {
         try {
             JwtUtil.parse(token); // valida assinatura e expiração
         } catch (JwtException | IllegalArgumentException e) {
+            LOG.warning("Invalid or expired JWT token: " + e.getMessage());
             abort(ctx, "Token inválido ou expirado.");
         }
     }

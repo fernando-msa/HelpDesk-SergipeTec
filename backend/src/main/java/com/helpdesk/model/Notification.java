@@ -9,11 +9,13 @@ public class Notification {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false, length = 50)
     private String type;
 
     @Column(length = 4000)
     private String message;
 
+    @Column(nullable = false)
     private Long createdAt;
 
     private Long readAt;

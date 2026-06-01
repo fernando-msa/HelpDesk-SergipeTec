@@ -49,4 +49,46 @@ public class NotificationJpaTest {
         assertEquals("TICKET_CREATED", found.getType());
         assertEquals("Novo chamado aberto", found.getMessage());
     }
+
+    @Test
+    public void testMarkNotificationAsRead() {
+        Notification notification = new Notification();
+        notification.setType("TICKET_UPDATED");
+        notification.setMessage("Chamado atualizado");
+        notification.setCreatedAt(System.currentTimeMillis());
+        assertNull(notification.getReadAt());
+
+        em.getTransaction().begin();
+        em.persist(notification);
+        em.getTransaction().commit();
+
+        // Mark as read
+        em.getTransaction().begin();
+        Notification found = em.find(Notification.class, notification.getId());
+        found.setReadAt(System.currentTimeMillis());
+        em.getTransaction().commit();
+
+        Notification updated = em.find(Notification.class, notification.getId());
+        assertNotNull(updated.getReadAt());
+        assertTrue(updated.getReadAt() >= updated.getCreatedAt());
+    }
+
+    @Test
+    public void testNotificationTypeVariants() {
+        String[] types = {"TICKET_CREATED", "TICKET_UPDATED", "TICKET_CLOSED"};
+
+        for (String type : types) {
+            Notification n = new Notification();
+            n.setType(type);
+            n.setMessage("Test notification: " + type);
+            n.setCreatedAt(System.currentTimeMillis());
+
+            em.getTransaction().begin();
+            em.persist(n);
+            em.getTransaction().commit();
+
+            Notification found = em.find(Notification.class, n.getId());
+            assertEquals(type, found.getType());
+        }
+    }
 }

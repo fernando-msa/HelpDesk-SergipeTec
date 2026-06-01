@@ -9,12 +9,15 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
 import java.util.List;
+import java.util.logging.Logger;
 
 @Stateless
 @Path("/api/notifications")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class NotificationResource {
+
+    private static final Logger LOG = Logger.getLogger(NotificationResource.class.getName());
 
     @PersistenceContext(unitName = "helpdeskPU")
     private EntityManager em;
@@ -36,6 +39,7 @@ public class NotificationResource {
         if (notification.getReadAt() == null) {
             notification.setReadAt(System.currentTimeMillis());
             em.merge(notification);
+            LOG.info("Notification #" + id + " marked as read");
         }
 
         return Response.ok(notification).build();

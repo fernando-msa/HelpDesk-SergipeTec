@@ -45,4 +45,53 @@ public class TicketJpaTest {
         assertNotNull(found);
         assertEquals("Teste", found.getTitle());
     }
+
+    @Test
+    public void testStatusTransition() {
+        Ticket t = new Ticket();
+        t.setTitle("Status Test");
+        t.setDescription("Testing status changes");
+        t.setStatus(TicketStatus.OPEN);
+        t.setCreatedAt(System.currentTimeMillis());
+
+        em.getTransaction().begin();
+        em.persist(t);
+        em.getTransaction().commit();
+
+        // OPEN -> IN_PROGRESS
+        em.getTransaction().begin();
+        t = em.find(Ticket.class, t.getId());
+        t.setStatus(TicketStatus.IN_PROGRESS);
+        em.getTransaction().commit();
+
+        assertEquals(TicketStatus.IN_PROGRESS, em.find(Ticket.class, t.getId()).getStatus());
+
+        // IN_PROGRESS -> CLOSED
+        em.getTransaction().begin();
+        t = em.find(Ticket.class, t.getId());
+        t.setStatus(TicketStatus.CLOSED);
+        em.getTransaction().commit();
+
+        assertEquals(TicketStatus.CLOSED, em.find(Ticket.class, t.getId()).getStatus());
+    }
+
+    @Test
+    public void testTicketTimestampIsSet() {
+        long before = System.currentTimeMillis();
+
+        Ticket t = new Ticket();
+        t.setTitle("Timestamp Test");
+        t.setDescription("Check createdAt");
+        t.setStatus(TicketStatus.OPEN);
+        t.setCreatedAt(System.currentTimeMillis());
+
+        em.getTransaction().begin();
+        em.persist(t);
+        em.getTransaction().commit();
+
+        long after = System.currentTimeMillis();
+        Ticket found = em.find(Ticket.class, t.getId());
+        assertNotNull(found.getCreatedAt());
+        assertTrue(found.getCreatedAt() >= before && found.getCreatedAt() <= after);
+    }
 }
